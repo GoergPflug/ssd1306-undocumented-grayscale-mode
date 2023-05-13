@@ -306,6 +306,7 @@ static s8 cathode_level[8];
 const u8 sbox128[] __attribute__((progmem)) = {
 119,35,88,0,97,108,27,20,82,58,29,101,21,57,105,107,51,98,1,45,8,11,52,25,36,116,65,28,19,24,76,6,64,31,3,72,67,7,39,113,23,4,90,125,112,66,22,40,104,84,54,124,2,117,70,61,60,5,44,48,86,18,13,34,85,59,80,110,89,115,69,43,33,122,14,118,123,30,10,81,87,92,46,32,9,53,127,56,15,49,103,37,74,73,91,77,50,100,38,55,95,17,47,109,42,96,121,62,26,83,99,78,16,41,126,120,106,68,63,12,79,94,111,71,114,75,93,102,
 };
+//#include "/current/vfd_simulator/xxx.h"
 //#include "/current/vfd_simulator/dg10s.h"
 
 const u8 _segmented_font[] __attribute__((progmem)) = {
@@ -2196,15 +2197,21 @@ static  u8 _i2c_data_out;
 #else
       propagte_error+=background_pixel;
 #endif
-/*
-      if (propagte_error > 31)
-      block_8_px |= or_bit, propagte_error-=63;
-  */    
-        if (propagte_error > 21*2)
-      block_8_px |= or_bit |(or_bit<<1), propagte_error-=63;
+
+   //   if (propagte_error > 31)
+     // block_8_px |= or_bit, propagte_error-=63;
+
+      if (propagte_error > 21*2)
+      {
+      block_8_px |= or_bit |(or_bit<<1);
+      propagte_error-=63;
+      }
       else
         if (propagte_error > 21)
-      block_8_px |= or_bit, propagte_error-=31;
+        {
+           block_8_px |= or_bit;
+           propagte_error-=31;
+        }
       
 #ifndef ENABLE_LOW_QUALITY_HALFTONE
       propagte_error/=2;
