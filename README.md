@@ -5,7 +5,7 @@ command to fill the screen ( 0xd6=1)
 
 if this works for you please open a ticket, if it does not please also open a ticket!
 
-see function TestCmd for the used commands (0x9a,2,0xd6,1)
+see function TestCmd for the used commands (0x9a,2,0xd6,1), Set Mux to 64
 
 https://www.youtube.com/shorts/1Vx-WqN9S30
 
