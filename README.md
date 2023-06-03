@@ -91,7 +91,7 @@ Differs between displays, and parameters 2 and 3 may be dummies.
 
 **Test: Display 1**
 
-- Corrupts the VRAM at one bit
+- Corrupts the VRAM when writing on of the bits
 
 **Display 2**
 
