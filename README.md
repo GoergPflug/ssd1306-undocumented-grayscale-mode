@@ -110,17 +110,46 @@ Additional undocumented stuff is in VCOMH.
 
 ## Mux Transition Trick for VSYNC
 
-Mux can be used for VSYNC.
+The mux can be used for VSYNC.
 
 To display a single frame (oneshot style):
-- Set mux to 63
-- Wait 150 us
-- Set mux to 1 (one of my displays has problems with mux 0)
+1. Set the mux to 63.
+2. Wait for 150 microseconds.
+3. Set the mux to 1. (Note: One of my displays has problems with mux 0.)
 
-## The Mux=1, Move Scanline to Draw Grayscale Images Trick
+## Mux=1, Move Scanline to Draw Grayscale Images Trick
 
-Mux=1 results in a 2-pixel high image.
-Move this image with the "Set Display Offset Register" from the top of the screen to the bottom.
-For each line, set the sourceline.
-Delay a bit, 9kHz rate of the calls seems fine.
-Now you can draw the image two times, increment the
+Setting the mux to 1 results in a 2-pixel high image.
+Follow these steps to draw grayscale images:
+1. Move this image using the "Set Display Offset Register" from the top of the screen to the bottom.
+2. For each line, set the sourceline.
+3. Delay for a bit. A 9kHz rate of the calls seems fine.
+4. Now, you can draw the image two times and increment the source line every other line. Change the brightness between the two phases, and you'll achieve a 4-color grayscale mode.
+
+## Scroll Area as Line Compare Registers
+
+The scroll area functions as line compare registers and works fine without the scroll commands.
+
+## Content Scroll Commands for SSD1309
+
+The content scroll commands of the SSD1309 allow scrolling on the X and Y axes without the display continuously scrolling.
+- The second dummy in content scroll, which "should" be set to 1, acts as a flag for "clear new pixels/rotate image".
+
+## Normal Scroll Commands
+
+The normal scroll commands accept a window on the X axis. Both dummy parameters, which should be set to 255, represent the start and end points. This information is documented in the SSD1309 and SSD1306B datasheets.
+
+## Larger Range in Charge Pump
+
+The SSD1306B datasheet documents a larger range in the charge pump.
+
+## Grayscale Mode
+
+To achieve grayscale mode, follow this procedure:
+1. Display a single frame with approximately 3 colors.
+2. Disable Remap (0xc0,0xa0) to avoid artifacts.
+3. Set Zoom=1 (register 0xd6).
+4. Display the single frame.
+5. Set the mux to 63.
+6. Wait for 150 microseconds.
+7. Set the mux to 1. (Note: One of my displays has problems with mux 0.)
