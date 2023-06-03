@@ -166,7 +166,7 @@ The SSD1306B datasheet documents a larger range in the charge pump.
 ## Hardware 3 Color Grayscale Mode
 
 To achieve grayscale mode, follow this procedure:
-1. Display a single frame with approximately 3 colors.
+1. Display a single frame with 3 colors. the palette will close to 0,195,255
 2. Disable Remap (0xc0,0xa0) to avoid artifacts.
 3. Set Zoom=1 (register 0xd6).
 4. Display the single frame.
