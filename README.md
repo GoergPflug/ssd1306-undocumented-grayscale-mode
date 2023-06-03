@@ -154,6 +154,7 @@ The scroll area functions as line compare registers and works fine without the s
 
 The content scroll commands of the SSD1309 allow scrolling on the X and Y axes without the display continuously scrolling.
 - The second dummy in content scroll, which "should" be set to 1, acts as a flag for "clear new pixels/rotate image".
+- content scroll at mux=1 is very fast: https://www.youtube.com/watch?v=DmiUed8LGRo
 
 ## Normal Scroll Commands
 
