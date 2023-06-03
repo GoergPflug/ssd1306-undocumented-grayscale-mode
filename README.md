@@ -129,7 +129,7 @@ Additional undocumented stuff is in VCOMH.
 
 Mux can be used for VSYNC. The trick is based on the idea to let the SSD1306 display a single (or 2) lines, and then set the image height (mux) to 64, wait at least 150us and set mux back to 1 (or 0, 0 would be better, but my newer display needs mux:1, which also works on my older). To display a single frame (oneshot style) you do the following:
 - Set mux to 63.
-- Wait 150 us.
+- Wait 150 us. (just insert the nop commmand a few times in your command stream)
 - Set mux to 1 (one of my displays has problems with mux 0). 
 - repeat at your intended framerate
 - make the top 2 lines black or they will glow pretty bright.
@@ -146,28 +146,9 @@ Mux can be used for VSYNC. The trick is based on the idea to let the SSD1306 dis
 
 
 
-
-## Mux Transition Trick for VSYNC
-
-The mux can be used for VSYNC.
-
-To display a single frame (oneshot style):
-1. Set the mux to 63.
-2. Wait for 150 microseconds.
-3. Set the mux to 1. (Note: One of my displays has problems with mux 0.)
-
-## Mux=1, Move Scanline to Draw 4 Color Grayscale Images Trick
-
-Setting the mux to 1 results in a 2-pixel high image.
-Follow these steps to draw grayscale images:
-1. Move this image using the "Set Display Offset Register" from the top of the screen to the bottom.
-2. For each line, set the sourceline.
-3. Delay for a bit. A 9kHz rate of the calls seems fine.
-4. Now, you can draw the image two times and increment the source line every other line. Change the brightness between the two phases, and you'll achieve a 4-color grayscale mode.
-
 ## Scroll Area as Line Compare Registers
 
-The scroll area functions as line compare registers and works fine without the scroll commands.
+The scroll area functions as line compare registers and works fine without the scroll commands, just change display offset, and startline...this allows for a scrolling area in the center of the screen
 
 ## the Content Scroll Commands for SSD1309 work on the SSD1306
 
