@@ -173,7 +173,7 @@ Display a single frame: the ssd1306 will "overrun" and draw the zoomed image 2 t
 3. Set the mux to 63.
 4. Wait for 150 microseconds.
 5. Set the mux to 1. (Note: One of my displays has problems with mux 0.)
-
+6. wait, goto 3 at 60hz rate.
 
 # ssd1306-undocumented-grayscale-mode on SOME new ssd1306
 
