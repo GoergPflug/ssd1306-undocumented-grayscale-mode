@@ -1,6 +1,6 @@
 ## Grayscale HW Grayscale Mode (The New and Compatible One)
 
-There are two modes for achieving grayscale on the SSD1306 display. The first mode seems to work only on a few SSD1306 displays. However, I found a second mode that works by setting `zoom=1` and driving the VSYNC via a multiplexer. In this case, the display overwrites the screen two times.
+There are two modes for achieving grayscale on the SSD1306 display. The first mode seems to work only on a few SSD1306 displays. However, I found a second mode that works by setting `zoom=1` and driving the VSYNC by chaning the mux register periodically. In this case, the display overwrites the screen two times.
 
 To see a demonstration of the new grayscale mode, please watch the following YouTube video:
 
