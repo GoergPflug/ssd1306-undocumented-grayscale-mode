@@ -6,7 +6,7 @@ To see a demonstration of the new grayscale mode, please watch the following You
 
 https://www.youtube.com/shorts/bLATW7clPwE
 
-Please note that the original undocumented mode is described at the bottom of this document.
+Please note that the original undocumented mode that works only on a few (newer?) displays is described at the bottom of this document.
 
 # Scan for Undocumented Registers - SSD1306
 
