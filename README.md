@@ -1,7 +1,7 @@
 
 the first mode only seems to work on few ssd1306, but i found a second one, which works by setting zoom=1 then driving the vsync via mux, the display overwrites the screen two times in this case. the orginial undocumented mode is at the bottom of this document
 
-Grayscale HW Grayscale mode:
+Grayscale HW Grayscale mode (the new and compatible one):
 
 see:
 https://www.youtube.com/shorts/LxZx6vhKvHE
