@@ -19,7 +19,121 @@ this mode only seems to work on few ssd1306, but i found a second one, which wor
 
 see:
 https://www.youtube.com/shorts/LxZx6vhKvHE
+# Scan for Undocumented Registers - SSD1306
 
+This is the result of testing the registers of the SSD1306 for undocumented features. The following registers were found in both displays.
+
+## Undocumented Register A9
+
+**Test: Display 1**
+
+- 0: Black screen
+- 255: Normal
+- 254: Off
+- 253: Off
+- 0xf: On
+- 7: Darkened, elapsed
+- 0b1011: Normal
+- 0b1001: Black
+- 0b1010: Black
+- 0b1110: Black
+- 0b0011: Darkened, elapsed (identical to 7) - Bit 2 probably has no function on screen 1 but does on screen 2
+
+**Display 2**
+
+- 0b0011: Off
+- 0b0111: Normal
+- 0b1011: Normal, darker than 0b1111
+- 0b1111: On (identical to 255)
+
+The following values work on both displays:
+
+- 0b1111: Screen on
+- 0b0000: Off
+
+The upper 4 bits seem to have no function. This register probably controls the power of the OLED. Switching from 15 to 0 makes the screen go black in about 2 frames.
+
+## Undocumented Register 9F
+
+**Test: Display 1**
+
+Writing to this register causes a black screen, and it appears to be irreversible.
+
+## Undocumented Register AD
+
+This register is documented for SSD1303 as DC Control.
+
+**Test: Display 1**
+
+- Bit 0 seems to have no effect.
+- Influences brightness.
+
+## Undocumented Register D8
+
+This register is documented for SSD1303 as Area Color (low power display mode).
+
+**Test: Display 1**
+
+- Affects brightness when written to.
+- Probably supports low power mode.
+
+## Undocumented Register D4
+
+Differs between displays, and parameters 2 and 3 may be dummies.
+
+**Test: Display 1**
+
+- 1p (timing? row timing?)
+  
+**Display 2**
+
+- 3p
+- Parameter 1: Timing effect
+- Parameter 2: Nothing visible directly
+- Parameter 3: Nothing visible directly
+
+## Undocumented Register DD
+
+**Test: Display 1**
+
+- Corrupts the VRAM at one bit
+
+**Display 2**
+
+- One bit has a brightness effect
+
+## Undocumented Register F2
+
+**Test: Display 1**
+
+- Lock VRAM (1<<4?)
+- 32 crash?
+
+## Undocumented Register FD
+
+This register is documented for SSD1309 as a lock register.
+
+**Test: Display 1**
+
+- Command lock works with 0x16 for lock, 0x12 for unlock
+- Works as expected
+
+## Undocumented Register D1
+
+**Test: Display 1**
+
+- Something with row timing?
+
+**Display 2**
+
+- Picture black depending on bit
+
+Additional undocumented stuff is in VCOMH.
+
+
+
+
+----old:
 # Scan for Undocumented Registers in SSD1306
 
 All registers scanned and analyzed:
