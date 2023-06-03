@@ -127,10 +127,12 @@ Additional undocumented stuff is in VCOMH.
 
 ## Mux Transition Trick for VSYNC
 
-Mux can be used for VSYNC. To display a single frame (oneshot style):
+Mux can be used for VSYNC. The trick is based on the idea to let the SSD1306 display a single (or 2) lines, and then set the image height (mux) to 64, wait at least 150us and set mux back to 1 (or 0, 0 would be better, but my newer display needs mux:1, which also works on my older). To display a single frame (oneshot style) you do the following:
 - Set mux to 63.
 - Wait 150 us.
-- Set mux to 1 (one of my displays has problems with mux 0).
+- Set mux to 1 (one of my displays has problems with mux 0). 
+- repeat at your intended framerate
+- make the top 2 lines black or they will glow pretty bright.
 
 ## The Mux=1 Trick - Move Scanline to Draw Grayscale Images
 
