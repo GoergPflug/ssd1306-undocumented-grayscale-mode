@@ -70,7 +70,7 @@ This register is documented for SSD1303 as DC Control.
 
 ## Undocumented Register D8
 
-This register is documented for SSD1303 as Area Color (low power display mode).
+This register is documented for SSD1303 as Area Color and low power display mode. Probably low power mode is present.
 
 **Test: Display 1**
 
