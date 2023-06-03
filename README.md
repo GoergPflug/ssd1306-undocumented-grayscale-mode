@@ -4,7 +4,7 @@ There are two modes for achieving grayscale on the SSD1306 display. The first mo
 
 To see a demonstration of the new grayscale mode, please watch the following YouTube video:
 
-[Grayscale HW Grayscale Mode Demo](https://www.youtube.com/shorts/LxZx6vhKvHE)
+https://www.youtube.com/shorts/bLATW7clPwE
 
 Please note that the original undocumented mode is described at the bottom of this document.
 
