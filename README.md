@@ -8,6 +8,12 @@ https://www.youtube.com/shorts/bLATW7clPwE
 
 Please note that the original undocumented mode that works only on a few (newer?) displays is described at the bottom of this document.
 
+## Copper Effects on the SSD1306
+
+this can be easily achieved by the Mux trick (and changing contrast)
+
+https://www.youtube.com/watch?v=LOilqUmZNBU&feature=youtu.be
+
 # Scan for Undocumented Registers - SSD1306
 
 This is the result of testing the registers of the SSD1306 for undocumented features. The following registers were found in both displays.
