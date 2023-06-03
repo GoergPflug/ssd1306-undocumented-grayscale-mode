@@ -161,7 +161,7 @@ Follow these steps to draw grayscale images:
 
 The scroll area functions as line compare registers and works fine without the scroll commands.
 
-## Content Scroll Commands for SSD1309
+## the Content Scroll Commands for SSD1309 work on the SSD1306
 
 The content scroll commands of the SSD1309 allow scrolling on the X and Y axes without the display continuously scrolling.
 - The second dummy in content scroll, which "should" be set to 1, acts as a flag for "clear new pixels/rotate image".
