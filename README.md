@@ -165,14 +165,14 @@ The SSD1306B datasheet documents a larger range in the charge pump.
 
 ## Hardware 3 Color Grayscale Mode
 
-To achieve grayscale mode, follow this procedure:
-1. Display a single frame with 3 colors. the palette will close to 0,195,255
-2. Disable Remap (0xc0,0xa0) to avoid artifacts.
-3. Set Zoom=1 (register 0xd6).
-4. Display the single frame.
-5. Set the mux to 63.
-6. Wait for 150 microseconds.
-7. Set the mux to 1. (Note: One of my displays has problems with mux 0.)
+To achieve grayscale mode,the palette will close to 0,195,255, follow this procedure:
+
+1. Disable Remap (0xc0,0xa0) to avoid artifacts.
+2. Set Zoom=1 (register 0xd6).
+Display a single frame: the ssd1306 will "overrun" and draw the zoomed image 2 times, so the pixels from row 32 in vram get added to row 0 and 1, from row 33 to 2 and 3  
+3. Set the mux to 63.
+4. Wait for 150 microseconds.
+5. Set the mux to 1. (Note: One of my displays has problems with mux 0.)
 
 
 # ssd1306-undocumented-grayscale-mode on SOME new ssd1306
