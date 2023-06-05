@@ -123,8 +123,8 @@ Differs between displays, and parameters 2 and 3 may be dummies.
 ## Undocumented Register DD
 
 **Test: Display 1**
-
-- Corrupts the VRAM when writing on of the bits
+  
+  not present
 
 **Display 2**
 
