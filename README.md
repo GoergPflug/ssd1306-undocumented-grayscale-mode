@@ -150,7 +150,7 @@ This register is documented for SSD1309 as a lock register.
 
 **Test: Display 1**
 
-- Something with row timing?, when in 128x32x3 bit 0 flashes the screen, must be 0...
+- Something with row timing?, when in 128x32x3 bit 0 flashes the screen, must be 0...other bits slight brightness effect
 
 **Display 2**
 
