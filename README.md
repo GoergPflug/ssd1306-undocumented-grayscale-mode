@@ -2,6 +2,15 @@
 
 There are two modes for achieving grayscale on the SSD1306 display. The first mode seems to work only on a few SSD1306 displays. However, I found a second mode that works by setting `zoom=1` and driving the VSYNC by chaning the mux register periodically. In this case, the display overwrites the screen two times.
 
+commands:
+    0xd6,1,      //zoom:1
+    ,0xa8,63,   //mux 64
+    0xe3,0xe3,0xe3,0xe3,0xe3,0xe3,0xe3,0xe3,0xe3,0xe3,   // this must be enough nops to cause 150us(?) delay (by transfering them to the display)
+    0xe3,0xe3,0xe3,0xe3,0xe3,0xe3,0xe3,0xe3,0xe3,0xe3,
+    0xa8,1   // mux:1
+
+
+
 To see a demonstration of the new grayscale mode, please watch the following YouTube video:
 
 https://www.youtube.com/shorts/bLATW7clPwE
