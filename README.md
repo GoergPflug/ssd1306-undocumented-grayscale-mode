@@ -51,7 +51,7 @@ The upper 4 bits seem to have no function. This register probably controls the p
 
 ## Undocumented Register A9
 
-- bit 0 and 1 must be set or screen will go black.
+- bit 0 and 1 must be set or screen will go black. display1: brighness effect for the rest of the bits
 
 
 ## Undocumented Register 9F
