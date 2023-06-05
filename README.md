@@ -48,6 +48,12 @@ The following values work on both displays:
 
 The upper 4 bits seem to have no function. This register probably controls the power of the OLED. Switching from 15 to 0 makes the screen go black in about 2 frames.
 
+
+## Undocumented Register A9
+
+- bit 0 and 1 must be set or screen will go black.
+
+
 ## Undocumented Register 9F
 
 **Test: Display 1**
