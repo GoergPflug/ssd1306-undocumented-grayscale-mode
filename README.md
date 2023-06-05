@@ -72,6 +72,13 @@ This register is documented for SSD1303 as Area Color and low power display mode
 - Affects brightness when written to.
 - Probably supports low power mode.
 
+
+## Undocumented Register D4
+
+bit 7 stripes
+bit ? black screen
+
+
 ## Undocumented Register D4
 
 Differs between displays, and parameters 2 and 3 may be dummies.
