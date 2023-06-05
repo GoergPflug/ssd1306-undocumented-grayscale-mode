@@ -72,6 +72,17 @@ This register is documented for SSD1303 as Area Color and low power display mode
 - Affects brightness when written to.
 - Probably supports low power mode.
 
+## Undocumented Register 0x24, Hardware accelerated rectangle.
+This command draws a rectangle
+
+0x24
+,0,
+2,  // row
+fuzz_d2,  // pattern to fill 
+4,  // row
+32  // xstart
+,64 // xend
+
 
 ## Undocumented Register D0
 
