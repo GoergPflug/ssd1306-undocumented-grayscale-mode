@@ -165,7 +165,11 @@ This register is documented for SSD1309 as a lock register.
 
 - Picture black depending on bit
 
+## VComH ##
+
 Additional undocumented stuff is in VCOMH.
+after clearing one of the top 1 bits the lower 4 bit allow finer control.
+
 
 ## Mux Transition Trick for VSYNC
 
@@ -195,7 +199,7 @@ The scroll area functions as line compare registers and works fine without the s
 ## the Content Scroll Commands for SSD1309 work on the SSD1306
 
 The content scroll commands of the SSD1309 allow scrolling on the X and Y axes without the display continuously scrolling.
-- The second dummy in content scroll, which "should" be set to 1, acts as a flag for "clear new pixels/rotate image".
+- The second dummy in content scroll, which "should" be set to 1, acts as a flag for at least "clear new pixels/rotate image", and new pixel=black/white.
 - content scroll at mux=1 is very fast: https://www.youtube.com/watch?v=DmiUed8LGRo
 
 ## Normal Scroll Commands
