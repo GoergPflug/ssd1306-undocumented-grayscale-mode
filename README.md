@@ -113,6 +113,7 @@ fuzz_d2,  // pattern to fill
 bit 7 stripes
 bit ? black screen
 
+       set bit 1 reset 4 for proper operation, brightness effect, black
 
 ## Undocumented Register D4
 
