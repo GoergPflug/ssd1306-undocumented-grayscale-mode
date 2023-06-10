@@ -1,0 +1,1474 @@
+register notes:
+
+D2: analyse
+//  ((brightness | 1 ) )&~16
+// 134: 10000110 = 6?
+// 132: 10000100 = 5?
+// 128 nur stripes?
+// 6=7 
+// 4=5
+// 0 no change
+// 1 no change
+// 2 no change
+// 3 no change
+// 4 image a slight bit darker / motion blur
+// 5 image a slight bit darker / motion blur
+// 6 dark
+// 7: dark  
+// 8 no change
+// 9 no change
+// 10 no change
+// 11 no change
+// 12 image a bit darker / motion blur?
+// 13 image a bit darker / motion blur?
+// 14 dark
+// 15 dark
+// 23 dark glowing random lines from top to bottom, something of the driver gooes off?
+// 31 dark??
+// 16 to 31 bright glowing random lines from top to bottom, something of the driver gooes off?
+// 32 dark
+// 36 
+// 55 dark
+// bit 4 set: there never seems to be anythhing on screen related to vram? turn vram / connection to it off?
+// this holds for: 
+// GfxApiSetDisplayUndocumentedD2(128|4|64|16);
+// 128 stripes
+// 64 ? flag? unused kein effekt?
+
+
+
+/*
+    rectangles
+
+  void GfxApiSetDisplayScroll (u8 brightness)
+  {
+  // 8 schwarz permanent?
+  // 16
+
+  // xd2, 4 dunkler, saft?
+  // 8 schwarz
+  //16,32 sw
+  const u8 init1306[]={
+  0,
+  //0x2C,0,0,0,7,0,127,
+
+  0x24
+  ,0,
+  2,  // row
+  fuzz_d2,  // pattern to fill
+  4,  // row
+  32  // xstart
+  ,64 // xend
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+  }
+
+
+
+*/
+
+
+
+
+
+
+void GfxApiSetDisplaySetScrollArea (u8 direction, u8 x_start, u8 row_start, u8 x_end,  u8 row_end, u8 clear_pixels)
+{
+  // 8 schwarz permanent?
+  // 16
+
+  // xd2, 4 dunkler, saft?
+  // 8 schwarz
+  //16,32 sw
+  const u8 init1306[] = {
+    0, 0x2e, // 0xd6, 1, 0xda, fuzz_d2
+    0x26 + direction, 0, row_start, clear_pixels, row_end, x_start, x_end
+
+  };
+  //*/
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+void GfxApiSetDisplayScroll2 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0, 0x2e + brightness
+
+  };
+}
+void GfxApiSetDisplayStopScroll ()
+{
+  const u8 init1306[] = {
+    0, 0x2e
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+void GfxApiSetDisplayStartScroll ()
+{
+  const u8 init1306[] = {
+    0, 0x2f
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+void GfxApiSetSlowDrive(u8 sd)
+{
+  const u8 sd_on[] = {
+    0,
+    0xdb, sd
+  };
+
+  const u8 sd_off[] = {
+    0,
+    0xA8, 63, 0x8D, 0x14, 0xD9, 0x31, 0xD5, 0xF0
+  };
+  if (sd)
+    os_i2c_write(sd_on, sizeof(sd_on));
+  else
+    os_i2c_write(sd_off, sizeof(sd_off));
+
+}
+
+
+// set the brightness of the screen 0 to 15
+void GfxApiSetBrightness (u8 brightness)
+{
+  brightness = brightness | (brightness << 4);
+  u8 v1 = brightness >> 5;
+  v1 <<= 4;
+  u8 v2 = brightness >> 4;
+  v2 |= v2 << 4;
+  const u8 init1306[] = {
+    0,
+    0xd9, v2, 0xdb, v1, 0x81, brightness
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+// a9, 1p schreiben verursacht flackern
+// ab crash?
+// 9f schwarz
+// 0xd0, ein bit schaltet bild ab
+// 0xd1, irgend ein einfluss auf zeilentiming/precharge?
+// 0xd2 ,4 "blur auf einem display"
+// 0xd4 3 parameter, vermutlich timing   ? display 1 nur 1 parameter
+// 0xd7 row timing?, 1p  0 sieht nice aus   // nur neu?? beide
+// d8 1p helligk
+// dd helligkeit 1p
+// dc gpio....
+// de, geometry, 1<<4 gibt doppelbild   // nur neu
+// 0xdf, ein bit schaltet screen aus
+// aa crash?
+// a3,a4, vermutlich paar verspult die geometrie
+// ad brightnesseffekt
+
+// de geometrie, de,4 besseres temporal
+// df 1 bit screen off
+// e1: 1p, kein effekt erkennbar
+// e9: 1p kein effekt
+// f0: timinig?
+// f2 : 1p, macht offensichtlich einiges? keine ahnnung
+// 9a,2 grayscale auf "neu"
+
+// 9d erweitert das frequenzregister auf neuem display, kein effekt
+
+// 9f, crash? schwarz
+
+
+
+
+/*
+   undocumented register A9
+   test:display 1:
+   0: black screen
+   255: normal
+   254: off
+   253: off
+   0xf:on
+   7: darkened, elapsed
+   0b1011: normal
+   0b1001: black
+   0b1010: black
+   0b1110: black
+   0b0011: darkened, elapsed identical 7, bit 2 probably no function on screen 1 but on screen 2
+   display 2:
+   0b0011: off
+   0b0111: normal
+   0b1011: normal darker than 0b1111,
+   0b1111: on, identical 255
+
+   -> works on both: 0b1111: screen on
+   0b0000: off
+   the upper 4 bits seem to have no function
+
+   probably this register controls the power of the oled, switching from 15 to 0 makes the screen go blacck in about 2 frames.
+
+*/
+
+void GfxApiSetRegA9 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0, 0xa9,
+    brightness
+    //,255^(1<<(brightness&15))
+
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+
+/*
+   undocumented register 9F
+   test:Display 1: write causes black screen, apparently irreversible
+
+
+*/
+void GfxApiSetReg9F (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0x9f, 255, 255, 0, 255, 255, 255, 255
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+
+/*
+   undocumented register AD, documented for ssd1303, DC Control
+   test:Display 1: 1p, present, influence on brightness, bit 0 seems to have no effect
+
+
+*/
+void GfxApiSetRegAD (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xdb, (brightness)
+
+
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+/*
+   undokumentiertes Register AB
+   test:Display 1: register nicht vorhanden
+
+
+*/
+void GfxApiSetRegAB (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xab, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undocumented register D8, documented for ssd1303 area color, low power display mode
+   test:display 1: present, affects brightness when fuzzed
+
+
+*/
+void GfxApiSetRegD8 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xd8, (brightness & 1) ? 0b11011101 : 0b11011000//s, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+/*
+   undokumentiertes Register DC,
+   test:Display 1: nicht vorhanden
+
+
+*/
+
+void GfxApiSetRegDC (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xdc, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+
+/*
+   undokumentiertes Register 82, dokumentiert für ssd1303 color bank
+   test:Display 1: 1p, kein effekt sichtbar
+
+
+*/
+void GfxApiSetReg82 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0x82, brightness, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register 91, dokumentiert für ssd1303 color lut
+   test:Display 1: nicht vorhanden
+
+
+*/
+void GfxApiSetReg91 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0x91, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+/*
+   undokumentiertes Register E9
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegE9 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xE9, brightness, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register EA
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegEA (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xEA, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register EB
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegEB (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xEB, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register EC
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegEC (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xEC, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register ED
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegED (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xED, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register EE
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegEE (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xEE, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register EF
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegEF (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xEF, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register F0
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegF0 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xF0, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register F1
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegF1 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xF1, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register F2
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegF3 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xF3, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register F2
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegF4 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xF4, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register F2
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegF5 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xF5, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register F2
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegF6 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xF6, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register F2
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegF7 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xF7, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register F2
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegF8 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xF8, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register F2
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegF9 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xF9, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register F2
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegFA (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xFA, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register F2
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegFB (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xFB, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register F2
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegFC (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xFC, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register F2
+   test:Display 1: Register nicht vorhanden
+
+
+*/
+void GfxApiSetRegFE (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xFE, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+/*
+   undokumentiertes Register E1
+   test:Display 1: 1p, kein effekt
+
+
+*/
+void GfxApiSetRegE1 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xE1, brightness, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+/*
+   undokumentiertes Register E2
+   test:Display 1: nicht vorhanden
+
+
+*/
+void GfxApiSetRegE2 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xE2, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+/*
+   undokumentiertes Register E4
+   test:Display 1: nicht vorhanden
+
+
+*/
+void GfxApiSetReg (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    brightness
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register E5
+   test:Display 1: nicht vorhanden
+
+
+*/
+void GfxApiSetRegE5 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xE5, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register E6
+   test:Display 1: nicht vorhanden
+
+
+*/
+void GfxApiSetRegE6 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xE6, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+/*
+   undokumentiertes Register E7
+   test:Display 1: nicht vorhanden
+
+
+*/
+void GfxApiSetRegE7 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xE7, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register E7
+   test:Display 1: nicht vorhanden
+
+
+*/
+void GfxApiSetRegE8 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xE8, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undocumented register D4
+   test:Display 1: 1p, timing?
+   display 2:
+   parameter 1: timing effect
+   parameter 2: nothing visible directly
+   parameter 3: nothing visible directly
+*/
+void GfxApiSetRegD4 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xd4, brightness
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+/*
+   undocumented register DD
+   test:Display 1: also something there, spools the ram at nem bit
+   Display 2:
+   flashing after one bit
+*/
+void GfxApiSetRegDD (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xdd, brightness, 0, 0
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register DE
+   test:Display 1: nicht vorhanden
+   Display 2:
+   blinken nach einem bit
+*/
+void GfxApiSetRegDE (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xde, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+/*
+   undokumentiertes Register F2
+   test:Display 1: Lock vram (1<<4?) irgendwas mit vram zugriffsmodus, 32 verspult irreversibel
+
+*/
+void GfxApiSetRegF2 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xf2, brightness, 0, 0, 0, 0, 0
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+/*
+   undocumented register FD, documented for ssd1309, lock register
+   test:Display 1: command lock works with 0x16 for lock, 0x12 for unlock
+
+*/
+void GfxApiSetRegFD (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xfd, brightness, 0, 0, 0, 0, 0
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+
+
+
+
+/*
+   undokumentiertes Register DF
+   test:Display 1: kein effekt
+
+*/
+void GfxApiSetRegDF (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xdf, brightness
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+/*
+   undokumentiertes Register D0
+   test:Display 1: kein effekt
+
+*/
+void GfxApiSetRegD0 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xd0, fra ? brightness : 255
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+
+void GfxApiSetBlink (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0x23, brightness
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undokumentiertes Register D2
+   test:Display 1: stripes, black
+
+       set bit 1 reset 4 for proper operation, brightness effect, black
+*/
+void GfxApiSetRegD2 (u8 brightness)
+{
+
+  //brightness&=0x00
+  ;
+  //brightness|=0x13;
+
+  //8 yflip     1101110
+  //brightness=14;  //  1110
+  //    brightness|=  0100000;
+  bro = brightness;
+  //            0b01000000
+  //   brightness&=  11101111;
+  //            76543210
+
+  //brightness=0b11101110;
+
+  //brightness=0xEE;
+
+  const u8 init1306[] = {
+    0,
+    0x20, fuzz_d2 //,0xa5
+  };
+  //  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+/*
+   undokumentiertes Register E0
+   test:Display 1: nicht vorhanden
+
+*/
+void GfxApiSetRegE0 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0,
+    0xe0, 0xa7
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+/*
+   undocumented register D1
+   test:Display 1
+   Something with row Timing
+   display 2
+   picture black depending on bit
+*/
+void GfxApiSetDisplayUndocumentedD2 (u8 par)
+{
+  const u8 init1306[] = {
+    0,
+    0xd2, par//((brightness | 1 ) )&~16
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+
+/*
+   undokumentiertes Register D7
+   test:Display 1 : kein effekt
+
+*/
+void GfxApiSetRegD7 (u8 brightness)
+{
+  const u8 init1306[] = {
+    0, 0x78,
+    0xd4, brightness
+  };
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+///////////////////////////////////////////////////////////////////////////driver etc
+static inline void GfxApiSetOSB(u8 offset, u8 startline, u8 brightness)
+{
+  const u8 init1306[] = {
+    //0,0xa8,1,0xa8,0,//0xe3,0xe3,0xe3,0xe3,0xe3,0xe3,0xe3,0xe3,0xa8,1
+    0 , 0xd3, offset, 0x40 + (startline & 63), 0x81, brightness
+  };//*/
+  os_i2c_write(init1306, sizeof(init1306));
+}
+
+static inline void GfxApiSetOS(u8 offset, u8 startline)
+{
+  const u8 init1306[] = {
+    0, 0x40 + (startline & 63), 0xd3, offset
+  };//*/
+  os_i2c_write_fast(init1306, sizeof(init1306));
+}
+static inline void drive_128x32x4()   // mux:1   tdiv:85, funktioniert halbwegs
+{
+  static u8 cnt, rndx;
+  cnt -= 1;
+  cnt &= 127;
+  // if(!cnt)cnt=127-rnd();
+
+  u8 cntx = (cnt + rndx) & 127;
+  u8 col = 20;
+  if (cntx > 63)cntx = 64 - cntx, col = 100;
+
+  u8 source_line = 63 - (cntx & 63);
+  source_line /= 2;
+  if (cnt > 63)source_line += 32;
+  u8 dest_line = cntx & 63;
+  GfxApiSetOSB(dest_line, source_line, 255);
+  os_restart_display_transfer();
+}
+
+
+static inline void drive_128x32x4_interlace()   // use mux:1
+{
+  static u8 cnt2;
+  cnt2--;
+  //cnt&=127;
+  u8 cnt = cnt2 & 127;
+
+
+  os_i2c_sda_high();
+  u8 source_line;
+  if (cnt & 128)
+  {
+    source_line = 63 - ((cnt & 63) / 2);
+    if (cnt & 1)source_line = 31 - ((cnt & 63) / 2);
+  }
+  else
+  {
+
+    source_line = 31 - ((cnt & 63) / 2);
+    if (cnt & 1)source_line = 63 - ((cnt & 63) / 2);
+
+  }
+  u8 dest_line = cnt & 63;
+  GfxApiSetOSB(dest_line, source_line, source_line > 31 ? 100 : 200);
+  os_restart_display_transfer();
+}
+
+u8 xxxxxbr = 0;
+
+static inline void drive_128x32x4_x()   // use mux:1
+{
+  static u8 cnt, add = 16;
+  cnt--;
+  //cnt&=127;
+
+  os_i2c_sda_high();
+  u8 cnt2 = cnt + add;
+  cnt2 &= 127;
+  //if(!cnt)add=rnd();
+  //if(cnt>63)cnt2^=63;
+  u8 source_line = 63 - (cnt2 / 2);
+  u8 dest_line = cnt2 & 63;
+  GfxApiSetOSB(dest_line, source_line, source_line > 31 ? xxxxxbr >> 1 : xxxxxbr);
+  os_restart_display_transfer();
+}
+
+static inline void drive_128x32x4_xx()   // use mux:1
+{
+  static u8 cnt;
+  cnt--;
+  cnt &= 127;
+
+  os_i2c_sda_high();
+  u8 source_line = 63 - (cnt / 1);
+  u8 dest_line = cnt & 63;
+  GfxApiSetOSB(dest_line, source_line, source_line > 31 ? 20 : 255);
+  os_restart_display_transfer();
+}
+
+
+static inline void drive_128x32x4x()   // mux:1   tdiv:85, funktioniert halbwegs
+{
+  static u8 cnt, rndx;
+  cnt -= 1;
+  cnt &= 127;
+
+  u8 c2 = cnt >> 1;
+  u8 c1 = cnt & 1;
+
+  u8  source_line = c2;
+  u8 dest_line = 63 - c2;
+  if (c1) source_line = 63 - c2, dest_line = c2;
+
+  u8 col = 100;
+
+
+
+
+
+  GfxApiSetOSB(dest_line, source_line, col);
+  os_restart_display_transfer();
+}
+
+
+
+
+static inline void drive_128x64x2_vig()   // mux:1   tdiv:85, funktioniert halbwegs
+{
+  static u8 cnt, switchat = 0;
+  static s8 dir = 2;
+
+  cnt += dir;
+  cnt &= 63;
+  if (cnt < 2)
+  {
+    cnt ^= 1;
+    dir = -dir;
+  }
+
+
+
+  // if(!cnt)cnt=127-rnd();
+  os_i2c_sda_high();
+  u8 source_line = 63 - (cnt);
+  u8 dest_line = cnt & 63;
+  u8  col = 255;
+  col -= cnt * 4;
+  GfxApiSetOSB(dest_line, source_line, col);
+  os_restart_display_transfer();
+}
+
+
+static inline void drive_128x32x4_2()   // mux:1
+{
+  static u8 cnt;
+  cnt -= 1;
+  cnt &= 127;
+  // if(!cnt)cnt=127-rnd();
+  os_i2c_sda_high();
+  u8 source_line = 63 - (cnt & 63);
+  source_line /= 2;
+  if (cnt & 1)source_line += 32;
+  u8 dest_line = cnt / 2;
+  GfxApiSetOSB(dest_line, source_line, (cnt & 1) ? 200 : 20);
+  os_restart_display_transfer();
+}
+
+
+static inline void drive_table()   // mux:1
+{
+  static u8 count;
+  os_i2c_stop_fast();
+  count = (count - 2) & 63;
+  u16 cnt = count * 3;
+  //  GfxApiSetOSB(screenmode[cnt]+2,screenmode[1+cnt],screenmode[2+cnt]);
+  GfxApiSetDisplayMux(3);
+  os_restart_display_transfer();
+}
+
+
+
+
+static inline void drive_128x32x2_hw_2q()   // use mux:1
+{
+  static u8 flag = 0;
+  static u8 cnt;
+  cnt -= 1;
+  cnt &= 63;
+  // cnt=rnd()^(rnd()<<2);
+  os_i2c_stop_fast();
+
+  //GfxApiSetStartline(16);
+  //GfxApiSetDisplayOffset(16);
+
+  GfxApiSetOSB(16 + (cnt & 31), 63 - cnt, cnt & 32 ? 255 : 20);
+
+
+  os_restart_display_transfer();
+}
+
+
+static inline void odrive_128x32x2_hw_2()   // use mux:1
+{
+  static u8 flag = 0;
+  static u8 cnt;
+  cnt -= 1;
+  cnt &= 63;
+  // cnt=rnd()^(rnd()<<2);
+  os_i2c_stop_fast();
+
+  //GfxApiSetStartline(16);
+  //GfxApiSetDisplayOffset(16);
+
+  GfxApiSetOSB(16 + (cnt & 31), 63 - cnt, cnt & 32 ? 255 : 20);
+
+
+  os_restart_display_transfer();
+}
+
+
+
+static inline void drive_128x32x2_hw_2()   // use mux:1
+{
+  static u8 flag = 0;
+  static u8 cnt;
+  cnt++;
+  cnt &= 63;
+
+
+  os_i2c_stop_fast();
+
+
+  if (cnt == 0)
+  {
+    GfxApiSetOSB(16 + (cnt & 31), 63 - cnt, cnt & 32 ? 255 : 20);
+    GfxApiSetDisplayMux(31);
+  }
+  if (cnt == 1)
+  {
+    GfxApiSetDisplayMux(0);
+  }
+
+
+  os_restart_display_transfer();
+}
+
+
+
+
+static inline void drive_128x64_vsync()   // use mux:1
+{
+  static u8 ff;
+  ff ^= 1;
+  os_i2c_stop_fast();
+  //GfxApiSetRegD2(fuzz_d2);
+
+  const u8 init1306[] = {0,
+                         0xa7
+                         , 0xa8, 63, //zoom0, mux 64
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, // nop
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+                         0xa8, 2  // mux:
+                         ,   0xa6,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xa7,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xa5,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xa4,
+
+
+
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xa6,
+                        };
+  os_i2c_write(init1306, sizeof(init1306));
+  os_i2c_stop_fast();
+
+  //GfxApiSetRegD2(fuzz_d2);
+  os_restart_display_transfer();
+}
+
+
+
+static inline void drive_128x32x4_zm()   // use mux:1
+{
+  static u8 cnt;
+  // cnt++;
+  os_i2c_stop_fast();
+
+  const u8 init1306[] = {0,
+                         0xd3, cnt, 0x40 + (cnt & 63), 0xa8, 16, //zoom:1, mux 64
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, // nop
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, // nop
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, // nop
+                         0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3, 0xe3,
+                         0xd3, cnt, 0x40 + ((cnt) & 63),
+                         0xa8, 0  // mux:1
+                        };
+  os_i2c_write_fast(init1306, sizeof(init1306));
+  os_restart_display_transfer();
+}
+
+
+
+static inline void drive_128x32x3()   // use mux:1
+{
+  static u8 cnt;
+  cnt--;
+  cnt &= 0x7f;
+
+  os_i2c_stop_fast();
+  u8 source_line = 63 - cnt / 2;
+  u8 dest_line = cnt & 63;
+  GfxApiSetOS(dest_line, source_line);
+  os_restart_display_transfer();
+}
+static inline void drive_128x32x3_gradient() // mux:1
+{
+  static u8 cnt;
+  cnt--;
+  cnt &= 0x7f;
+
+  os_i2c_stop();
+  u8 source_line = 63 - cnt / 2;
+  u8 dest_line = cnt & 63;
+  u8 br = 255 - 8 * abs(31 - dest_line);
+  GfxApiSetOSB(dest_line, source_line, br);
+  os_restart_display_transfer();
+}
+
+
+
+
+static inline void drive_128x64x2_gradient() // mux:1
+{
+  return;
+  static u8 cnt;
+  cnt--;
+  cnt &= 0x7f;
+
+  os_i2c_stop();
+  u8 source_line = -(cnt & 63);
+  u8 dest_line = cnt & 63;
+  u8 br = 255 - 8 * abs(31 - dest_line);
+  GfxApiSetOSB(dest_line, source_line, br);
+  os_restart_display_transfer();
+}
+
+
+
+
+
+static inline void drive_128x64x2() // mux:1
+{
+  static u8 cnt;
+  cnt--;
+  cnt &= 0x7f;
+
+  u8 source_line = -(cnt & 63);
+  u8 dest_line = cnt & 63;
+  GfxApiSetOSB(dest_line, source_line, cnt > 31 ? 128 : 255);
+  //  if (cnt == 16)GfxApiSetDisplayScroll(0);
+  os_restart_display_transfer();
+}
+
+
+
+
+static void drive_gray()
+{
+  os_i2c_stop();
+  const u8 init1306[] = {0,
+                         0xd6, 1, 0xa8, 2, 0xd6, 0, 0xC0, 0xA0, // reset to normal orientation
+
+                        };
+  os_i2c_write(init1306, sizeof(init1306));
+  //  _delay_us(150);
+
+  const u8 init1306_2[] = {0,
+                           0xd6, 1, 0xa8, 1
+                          };
+  os_i2c_write(init1306, sizeof(init1306_2));
+  os_restart_display_transfer();
+}
+
+
+
+
+
+
+
+
+static inline void drive_128x32x2_t()   // use mux:1
+{
+  static u8 cnt;
+  cnt--;
+  cnt &= 0x7f;
+
+  os_i2c_stop_fast();
+
+  u8 source_line = 63 - (cnt & 63);
+  u8 dest_line = cnt & 63;
+  GfxApiSetOS(dest_line, source_line);
+//  if ((cnt & 63) == 40)GfxApiSetRegD2(fuzz_d2);
+  //if ((cnt & 63) == 20)GfxApiSetRegD2(0);
+
+  os_restart_display_transfer();
+}
+
+
+static inline void d2_test()   // use mux:1
+{
+  static u8 cnt;
+  cnt--;
+  cnt &= 0x7f;
+
+  os_i2c_stop_fast();
+
+  u8 source_line = 63 - (cnt & 63);
+  u8 dest_line = cnt & 63;
+  //  GfxApiSetOS(dest_line,source_line);
+  //if((cnt&63)==40)GfxApiSetRegD2(fuzz_d2);
+ // GfxApiSetRegD2(0);
+
+  os_restart_display_transfer();
+}
+
+
