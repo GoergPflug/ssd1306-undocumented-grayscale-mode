@@ -239,3 +239,22 @@ https://www.youtube.com/shorts/1Vx-WqN9S30
 the pixel format is simple 2 pixels on y become one, summed up
 pixel at (0,0) = 1 , pixel at (0,1) = 0   -> both pixels get 0.5 brightness
 if both are 1 its 1 brightness for both (and for 0 the same)
+
+
+Undocumented Behavior: Multiplex Command and Frame Control
+
+The multiplex command on the SSD1306 display controller allows you to control the number of lines displayed on the screen. Normally, setting the multiplex value to 0 should display the lowest line, which becomes frozen and unmovable. However, it has been observed that some displays may experience issues when using multiplex=0, resulting in undesirable behavior.
+
+To address this problem, an alternative approach using multiplex=1 is recommended. When multiplex is set to 1 or 0, an interesting trick can be employed to prevent the first two lines of the display from glowing continuously. By setting the multiplex value to 1 or 0, the display will maintain a very high frame rate while keeping these one or two lines constantly displayed.
+
+To achieve frame control using this trick, follow these steps:
+
+Set multiplex to 1 or 0: This ensures that the display continues to show the first one or two lines at a high frame rate.
+
+Set multiplex to 63: At this point, the display starts showing the frame, and its internal line counter begins incrementing up to 63.
+
+After the display has shown more than one line (approximately 100 microseconds), set multiplex back to 1: By triggering this transition, you gain control over the display of every subsequent frame.
+
+By employing this method, you can manipulate the display to show specific frames by carefully timing the transition of the multiplex command. This undocumented behavior provides a means of frame control and can be useful for certain applications where precise display timing is required.
+
+
