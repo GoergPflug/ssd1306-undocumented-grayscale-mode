@@ -258,3 +258,31 @@ After the display has shown more than one line (approximately 100 microseconds),
 By employing this method, you can manipulate the display to show specific frames by carefully timing the transition of the multiplex command. This undocumented behavior provides a means of frame control and can be useful for certain applications where precise display timing is required.
 
 
+
+
+------
+
+
+undocumented register A9
+   test:display 1:
+   0: black screen
+   255: normal
+   254: off
+   253: off
+   0xf:on
+   7: darkened, elapsed
+   0b1011: normal
+   0b1001: black
+   0b1010: black
+   0b1110: black
+   0b0011: darkened, elapsed identical 7, bit 2 probably no function on screen 1 but on screen 2
+   display 2:
+   0b0011: off
+   0b0111: normal
+   0b1011: normal darker than 0b1111,
+   0b1111: on, identical 255
+
+   -> works on both: 0b1111: screen on
+   0b0000: off
+
+
