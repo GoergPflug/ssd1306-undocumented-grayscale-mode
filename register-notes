@@ -1,6 +1,18 @@
 collected notes on the registers
 
 
+scan der no effect register:
+Calc3D();
+//int scanreg[]={0xe1,0xe9,0xdf,0xd0,0xd7};
+int scanreg[]={0xd7};
+static int qffff;
+// 0xe1: bild weg
+// 0xd1 kein effekt
+// 0xd0 
+// 0xdf, 0xe9 vermutlich nicht vorhanden / invert
+// 0xd0: kein effekt
+// 0xd7: 
+
 Register D2
 
 
@@ -221,3 +233,16 @@ D2: analyse
 
 
 for areafill / scroll see main readme.md. 
+
+
+Calc3D();
+//int scanreg[]={0xe1,0xe9,0xdf,0xd0,0xd7};
+int scanreg[]={0xd7};
+static int qffff;
+// 0xe1: bild weg
+// 0xd1 kein effekt
+// 0xd0 
+// 0xdf, 0xe9 vermutlich nicht vorhanden / invert
+// 0xd0: kein effekt
+// 0xd7: 
+
