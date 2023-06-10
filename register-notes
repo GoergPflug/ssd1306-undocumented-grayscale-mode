@@ -1,5 +1,7 @@
-collected notes on register d2
-.
+collected notes on the registers
+
+
+Register D2
 
 
 effect of writing 4 to this register, it activates the scrolling, blockfill, acclerator
@@ -215,3 +217,7 @@ D2: analyse
 */
    undokumentiertes Register D7
    test:Display 1 : kein effekt
+
+
+
+for areafill / scroll see main readme.md. 
