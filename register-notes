@@ -1,0 +1,217 @@
+collected notes on register d2
+.
+
+
+effect of writing 4 to this register, it activates the scrolling, blockfill, acclerator
+
+see:
+
+https://community.arduboy.com/t/undocumented-register-d2-and-the-charge-pump/11113/3
+
+
+
+register notes:
+
+D2: analyse
+//  ((brightness | 1 ) )&~16
+// 134: 10000110 = 6?
+// 132: 10000100 = 5?
+// 128 nur stripes?
+// 6=7 
+// 4=5
+// 0 no change
+// 1 no change
+// 2 no change
+// 3 no change
+// 4 image a slight bit darker / motion blur
+// 5 image a slight bit darker / motion blur
+// 6 dark
+// 7: dark  
+// 8 no change
+// 9 no change
+// 10 no change
+// 11 no change
+// 12 image a bit darker / motion blur?
+// 13 image a bit darker / motion blur?
+// 14 dark
+// 15 dark
+// 23 dark glowing random lines from top to bottom, something of the driver gooes off?
+// 31 dark??
+// 16 to 31 bright glowing random lines from top to bottom, something of the driver gooes off?
+// 32 dark
+// 36 
+// 55 dark
+// bit 4 set: there never seems to be anythhing on screen related to vram? turn vram / connection to it off?
+// this holds for: 
+// GfxApiSetDisplayUndocumentedD2(128|4|64|16);
+// 128 stripes
+// 64 ? flag? unused kein effekt?
+
+
+  // 8 schwarz permanent?
+  // 16
+
+  // xd2, 4 dunkler, saft?
+  // 8 schwarz
+  //16,32 sw
+
+
+
+
+*/
+
+
+
+
+// a9, 1p schreiben verursacht flackern
+// ab crash?
+// 9f schwarz
+// 0xd0, ein bit schaltet bild ab
+// 0xd1, irgend ein einfluss auf zeilentiming/precharge?
+// 0xd2 ,4 "blur auf einem display"
+// 0xd4 3 parameter, vermutlich timing   ? display 1 nur 1 parameter
+// 0xd7 row timing?, 1p  0 sieht nice aus   // nur neu?? beide
+// d8 1p helligk// dc gpio....
+// de, geometry, 1<<4 gibt doppelbild   // nur neu
+// 0xdf, ein bit schaltet screen aus
+// aa crash?
+// a3,a4, vermutlich paar verspult die geometrie
+// ad brightnesseffekt
+
+// de geometrie, de,4 besseres temporal
+// df 1 bit screen off
+// e1: 1p, kein effekt erkennbar
+// e9: 1p kein effekt
+// f0: timinig?
+// f2 : 1p, macht offensichtlich einiges? keine ahnnung
+// 9a,2 grayscale auf "neu"
+
+// 9d erweitert das frequenzregister auf neuem display, kein effekt
+
+// 9f, crash? schwarz
+
+
+   undocumented register A9
+   test:display 1:
+   0: black screen
+   255: normal
+   254: off
+   253: off
+   0xf:on
+   7: darkened, elapsed
+   0b1011: normal
+   0b1001: black
+   0b1010: black
+   0b1110: black
+   0b0011: darkened, elapsed identical 7, bit 2 probably no function on screen 1 but on screen 2
+   display 2:
+   0b0011: off
+   0b0111: normal
+   0b1011: normal darker than 0b1111,
+   0b1111: on, identical 255
+
+   -> works on both: 0b1111: screen on
+   0b0000: off
+   the upper 4 bits seem to have no function
+
+   probably this register controls the power of the oled, switching from 15 to 0 makes the screen go blacck in about 2 frames.
+
+
+/*
+   undocumented register 9F
+   test:Display 1: write causes black screen, apparently irreversible
+
+
+*/
+/*
+   undocumented register AD, documented for ssd1303, DC Control
+   test:Display 1: 1p, present, influence on brightness, bit 0 seems to have no effect
+
+
+*/
+   undocumented register D8, documented for ssd1303 area color, low power display mode
+   test:display 1: present, affects brightness when fuzzed
+
+
+   undokumentiertes Register 82, dokumentiert für ssd1303 color bank
+   test:Display 1: 1p, kein effekt sichtbar
+
+   undokumentiertes Register 91, dokumentiert für ssd1303 color lut
+   test:Display 1: not present
+
+   undokumentiertes Register E9
+   test:Display 1: Register not present
+
+   undokumentiertes Register EA
+   test:Display 1: Register not present
+/*
+   undokumentiertes Register EB
+   test:Display 1: Register not present
+
+   undokumentiertes Register EC
+   test:Display 1: Register not present
+
+   undokumentiertes Register ED
+   test:Display 1: Register not present
+
+   undokumentiertes Register EE
+   test:Display 1: Register not present
+
+   undokumentiertes Register EF
+   test:Display 1: Register not present
+
+   undokumentiertes Register F0
+   test:Display 1: Register not present
+
+   undokumentiertes Register F1
+   test:Display 1: Register not present
+
+   undokumentiertes Register F2
+   test:Display 1: Register not present
+
+   undokumentiertes Register E1
+   test:Display 1: 1p, kein effekt
+
+   undokumentiertes Register E2
+   test:Display 1: not present
+
+
+/*
+   undocumented register D4
+   test:Display 1: 1p, timing?
+   display 2:
+   parameter 1: timing effect
+   parameter 2: nothing visible directly
+   parameter 3: nothing visible directly
+*/
+
+   undokumentiertes Register DE
+   test:Display 1: not present
+   Display 2:
+   blinken nach einem bit
+
+   undocumented register FD, documented for ssd1309, lock register
+   test:Display 1: command lock works with 0x16 for lock, 0x12 for unlock
+
+/*
+   undokumentiertes Register DF
+   test:Display 1: kein effekt
+
+
+/*
+   undokumentiertes Register D0
+   test:Display 1: kein effekt
+
+
+
+   undokumentiertes Register D2
+   test:Display 1: stripes, black
+/*
+   undocumented register D1
+   test:Display 1
+   Something with row Timing
+   display 2
+   picture black depending on bit
+*/
+   undokumentiertes Register D7
+   test:Display 1 : kein effekt
