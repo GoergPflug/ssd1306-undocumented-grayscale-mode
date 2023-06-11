@@ -117,7 +117,7 @@ bit ? black screen
 
 ## Undocumented Register D4
 
-Differs between displays, and parameters 2 and 3 may be dummies.
+Probably discharge cycles: https://www.youtube.com/shorts/cD0YHYcuCro
 
 **Test: Display 1**
 
