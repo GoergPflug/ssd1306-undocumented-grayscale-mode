@@ -5,7 +5,7 @@ register d4, timing effekt, probably discharge cyles: https://www.youtube.com/sh
 Register d0: bit 0 helligkeitseffekt
 d1:bit 1 starker helligkeitseffekt
 
-
+register d1: verändertes verhalten durch d4,4 -> schwarz
 
 scan der no effect register:
 Calc3D();
@@ -138,7 +138,7 @@ D2: analyse
 
 
 /*
-   undocumented register 9F
+   undocumented register 9Fx
    test:Display 1: write causes black screen, apparently irreversible
 
 
