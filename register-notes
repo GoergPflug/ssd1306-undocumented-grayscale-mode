@@ -99,11 +99,11 @@ D2: analyse
 // ad brightnesseffekt
 
 // de geometrie, de,4 besseres temporal
-// df 1 bit screen off
+// df 1 bit screen off<--nicht existent
 // e1: 1p, kein effekt erkennbar
-// e9: 1p kein effekt
-// f0: timinig?
-// f2 : 1p, macht offensichtlich einiges? keine ahnnung
+// e9: 1p kein effekt  <---existiert nicht
+// f0: timinig?  <---existiert nicht
+// f2 : 1p, macht offensichtlich einiges? keine ahnnung <<--existiert nicht
 // 9a,2 grayscale auf "neu"
 
 // 9d erweitert das frequenzregister auf neuem display, kein effekt
