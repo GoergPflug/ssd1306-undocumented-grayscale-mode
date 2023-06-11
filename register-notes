@@ -1,7 +1,9 @@
 collected notes on the registers
 
+register d4, timing effekt, probably discharge cyles: https://www.youtube.com/shorts/cD0YHYcuCro
 
 Register d0: bit 0 helligkeitseffekt
+d1:bit 1 starker helligkeitseffekt
 
 
 
