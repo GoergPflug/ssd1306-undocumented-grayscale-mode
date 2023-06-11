@@ -1,6 +1,10 @@
 collected notes on the registers
 
 
+Register d0: bit 0 helligkeitseffekt
+
+
+
 scan der no effect register:
 Calc3D();
 //int scanreg[]={0xe1,0xe9,0xdf,0xd0,0xd7};
