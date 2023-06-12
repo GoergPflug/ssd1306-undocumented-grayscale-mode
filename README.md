@@ -118,6 +118,8 @@ bit ? black screen
 ## Undocumented Register D4
 
 Probably discharge cycles: https://www.youtube.com/shorts/cD0YHYcuCro
+bit 7 (0x80) must be set, or the command will have no effect, bits 0-3 are probably the charge cycles, setting it to 15 results in the heighest frame rate
+
 
 **Test: Display 1**
 
